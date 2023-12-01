@@ -1,0 +1,31 @@
+---
+- hosts: fc_advance_printing
+  become: true
+  become_user: root
+  become_method: sudo
+  tasks:
+          # create users for us
+          # note user vivek added to sudo group
+          # on many system you may need to use wheel
+          # user in sudo or wheel group can sudo
+          - user:
+                  name: zyp.hein
+                  comment: "Zay Yan Paing Hein(DC&Cloud)"
+                  shell: /bin/bash
+                  # groups: sudo
+                  # append: yes
+                  # generate_ssh_key: yes
+                  # python -c 'import crypt,getpass; print crypt.crypt(getpass.getpass())'
+                  # password: $6$KyaHNM8wOd0j5nbR$eZLWF8VGzXtRBkEI2Gk1BL/4ZqwbVwDPImnbTbza0zT89yuB6FPu6jT3zuvaW78xcfO1JMRCtBMxBsd/8KwIr1
+                  # ssh_key_type: ed25519
+          # upload ssh key
+          - authorized_key:
+                  user: zyp.hein
+                  state: present
+                  manage_dir: yes
+                  key: "{{ lookup('file', '/home/zawwin.min/Flexcube-CBS-DEV-Prod-C_S-Team/Keys/zyp.hein_id_rsa.pub') }}"
+
+          - name: Insert a line at the end of /etc/sudoers
+            lineinfile:
+              path: /etc/sudoers
+              line: "zyp.hein ALL=(ALL) NOPASSWD: ALL"
