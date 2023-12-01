@@ -1,0 +1,32 @@
+---
+- name: 
+  hosts: all
+  become: true
+  become_user: root
+  become_method: sudo
+  tasks:
+          # create users for us
+          # note user zyp.hein added to sudo group
+          # on many system you may need to use wheel
+          # user in sudo or wheel group can sudo
+          - user:
+                  name: zyp.hein
+                  comment: "Zay Yan Paing Hein(DC&Cloud)"
+                  shell: /bin/bash      
+                  # groups: sudo
+                  # append: yes
+                  # generate_ssh_key: yes
+                  # python -c 'import crypt,getpass; print crypt.crypt(getpass.getpass())'
+                  password: $6$lUZtGcMx4w/WDdsu$YG.W4B7KoEQ6exlpqkVeXa9vwdFt/v3XLekz4TwhZpGJxKauBGMNRgfK/YLRWfw1iofB82T1ZMjwsWwJ9QYPl0
+                  # ssh_key_type: ed25519
+          # upload ssh key
+          - authorized_key:
+                  user: zyp.hein
+                  state: present
+                  manage_dir: yes
+                  key: "{{ lookup('file', '/home/zawwin.min/LNX_Team/zayyanpaing.hein_ssh/AWS/zyp.hein_aws_id_rsa.pub') }}"
+
+          - name: Insert a line at the end of /etc/sudoers
+            lineinfile:
+              path: /etc/sudoers
+              line: "zyp.hein ALL=(ALL) NOPASSWD: ALL"

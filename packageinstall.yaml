@@ -1,0 +1,14 @@
+---
+- hosts:
+  gather_facts: true
+  tasks:
+    block:
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+      service:
+        name: httpd
+        state: started
+        enable: true
+      when: ansible_distribution == "CentOS"

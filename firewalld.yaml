@@ -1,0 +1,8 @@
+---
+- hosts: node1
+  tasks:
+      - name: disable firewalld
+        service:
+                name: firewalld
+                state: stopped
+                enabled: false

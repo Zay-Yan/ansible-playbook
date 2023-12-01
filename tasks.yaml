@@ -1,0 +1,8 @@
+---
+- packages:
+        name: vsftpd
+        state: present
+- service:
+        name: vsftpd
+        state: started
+        enabled: true

@@ -1,0 +1,66 @@
+---
+- name: Deploy Wordpress
+  hosts: all
+  become: 
+  become_user: root
+  vars:
+    packages:
+      - httpd
+      - php 
+      - php-mysqlnd 
+      - php-pdo 
+      - php-gd 
+      - php-mbstring
+      - mariadb-server 
+      - mariadb
+      - wget
+  tasks:
+        - name: Install Pre-requisites
+          yum:
+              name: "{{ packages }}"
+              state: installed
+          loop: "{{ packages }}"
+        - name: start service
+          service:
+              name: "{{ item.name }}"
+              state: started
+              enabled: true
+          loop:
+            - name: httpd
+            - name: mariadb
+        - name: download and install
+          shell: wget https://wordpress.org/latest.tar.gz
+        - name: extract
+          shell: tar -xvf latest.tar.gz
+        - name: copy wordpress folder
+          command: mv /home/ec2-user/wordpress/wp-config-sample.php /home/ec2-user/wordpress/wp-config.php
+        - name: copy Wordpress
+          command: cp -R /home/ec2-user/wordpress /var/www/html/
+        - name: Update Wordpress config file
+          lineinfile:
+            path: /var/www/html/wordpress/wp-config.php
+            regexp: "{{item.regexp}}"
+            line: "{{item.line}}"
+          with_items:
+            - {'regexp': "define\\( 'DB_NAME', '(.)+' \\);", 'line': "define( 'DB_NAME', 'wordpress_db' );"}
+            - {'regexp': "define\\( 'DB_USER', '(.)+' \\);", 'line': "define( 'DB_USER', 'root' );"}
+            - {'regexp': "define\\( 'DB_PASSWORD', '(.)+' \\);", 'line': "define( 'DB_PASSWORD', 'asd123!@#' );"}
+
+        - name: Update ownership to Apache user
+          file:
+            path: /var/www/html/wordpress/
+            state: directory
+            recurse: yes
+
+        - name: Set the correct permissions on Wordpress directories
+          command: chmod -R 775 /var/www/html/
+
+        - name: Set the correct permissions for Wordpress files
+          command: chown -R apache:apache /var/www/html/wordpress
+
+        - name: restart service
+          service:
+              name: httpd
+              state: restarted
+ 
+      

@@ -1,0 +1,18 @@
+---
+- hosts: temeno_infinity
+  become: true
+  become_user: root
+  become_method: sudo
+  vars:
+    myuser: 
+      - anoop.s
+      - user2
+  tasks:
+    - name: disable password expiration
+      user:
+        name: "{{ myuser }}"
+        password_expire_min: 0
+        password_expire_max: 9999
+#        user_inactive: -1
+        expires: -1
+      loop: "{{ myuser }}"

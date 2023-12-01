@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#Generate SSHkeypair
+ansible localhost -m openssh_keypair -a "path=/home/automation/.ssh/id_rsa owner=automation group=automation type=rsa"
+#Create User
+ansible all -i ../inventory.txt -m user -a "name=automation password={{ "devops" | password_hash ('sha512' , 'salt')}}
+#Share Key
+ansible all -i ../inventory.txt -m authorized_key -a "key={{ lookup('file', '/home/automaion/.ssh/id_rsa.pub') }} user=automation"

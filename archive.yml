@@ -1,0 +1,37 @@
+---
+- name: Create Archive File
+  hosts: localhost
+  tasks:
+  - name: Create Archive File
+    file:
+      path: /backup
+      state: directory
+      mode: 0754
+      owner: automation
+      group: automation
+- name: Archive the contents
+  hosts: all
+  tasks:
+  - name: Create Archive File
+    file:
+        path: /backup
+        state: directory
+        mode: 0754
+        owner: automation
+        group: automation
+  - name: Archive using gzip
+    archive:
+        path: /etc/*
+        dest: /backup/configuration.gz
+        format: gz
+        owner: automation
+        group: automation
+        mode: 0754
+        force_archive: true
+  - name: retreive data
+    fetch:
+        src: /backup/configuration.gz
+        dest: /backup/configuration.gz
+        mode: 0754
+        owner: automation
+        group: automatio

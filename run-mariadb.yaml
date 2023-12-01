@@ -1,0 +1,27 @@
+---
+- name: Run Database MariaDB and set root password
+  hosts: all
+  vars:
+    packages:
+      - mariadb-server
+      - python3-PyMySQL
+  tasks:
+      - name: Install Package and Start Service
+        yum:
+            name: "{{ item }}"
+            state: installed
+        loop: "{{ packages }}"
+        when:  ansible_distribution == "RHEL 8"  and  ansible_distribution_version == 2 
+      - name: Start Service
+        service:
+            name: mariadb
+            state: started
+            enabled: true
+        notify:
+          - service start
+  handlers:
+      - name: service start
+        mysql_user:
+          name: root
+          password: asd123!@#
+

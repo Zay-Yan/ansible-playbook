@@ -1,0 +1,36 @@
+---
+- hosts: node1
+  tasks:
+      - name: install httpd and firewalld
+        yum:
+            name: 
+                - httpd
+                - firewalld
+            state: installed
+      - name: create new content in webserver
+        copy:
+            content: "Welcome to my world"
+            dest: /var/www/html/index.html
+      - name: start httpd
+        service:
+            name: httpd
+            enabled: true
+            state: started
+      - name: start firewalld
+        service:
+            name: firewalld
+            enabled: true
+            state: started
+      - name: open port in firewalld
+        firewalld:
+            service: http
+            permanent: true
+            state: enabled
+            immediate: yes
+   #   - name: test webserver 
+     #   url:
+      #    url: http://172.31.100.182:80
+       #   return_content: yes
+        #  status_code: 200  
+
+

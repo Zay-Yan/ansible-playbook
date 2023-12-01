@@ -1,0 +1,9 @@
+---
+- name: Gather Ansible Facts
+  hosts: all
+  vars:
+    ram: 1024
+  tasks:
+    - fail:
+        msg: Server has less than required 1024MB of RAM
+      when: 
